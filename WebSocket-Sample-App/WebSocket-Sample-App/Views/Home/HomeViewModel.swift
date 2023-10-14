@@ -10,7 +10,7 @@ import Foundation
 
 protocol HomeViewModelRepresentable {
     
-    var counterValueSubject: CurrentValueSubject<Double, Error> { get }
+    var counterValueSubject: CurrentValueSubject<String, Error> { get }
     
     func loadData()
 }
@@ -18,25 +18,37 @@ protocol HomeViewModelRepresentable {
 final class HomeViewModel<R: AppRouter> { 
     
     private let router: R
+    private let store: WebSocketStore
+    private var anyCancellables: Set<AnyCancellable> = .init()
     
-    private var counterEmited: Double = 0.0 {
+    private var counterEmited: String = "0.0" {
         didSet {
             counterValueSubject.send(counterEmited)
+            loadData()
         }
     }
     
-    internal var counterValueSubject: CurrentValueSubject<Double, Error> = .init(0)
+    internal var counterValueSubject: CurrentValueSubject<String, Error> = .init("0")
     
-    init(router: R) {
+    init(router: R, store: WebSocketStore = APIManager()) {
         self.router = router
+        self.store = store
+        self.store.startService()
     }
 }
 
 extension HomeViewModel: HomeViewModelRepresentable {
     
     func loadData() {
-        Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { [unowned self] _ in
-            counterEmited = Double.random(in: 20000...30000)
+        Task {
+            switch try await store.listenService() {
+                case .data(let data): counterValueSubject.send(data.description)
+                    
+                case .string(let string): counterEmited = string
+                    
+                @unknown default: counterValueSubject.send(completion: .failure(APIError.unknownError))
+            }
         }
+        .cancel()
     }
 }

@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+enum Coin: String {
+    case bitcoin
+    case ethereum
+    case monero
+    case litecoin
+}

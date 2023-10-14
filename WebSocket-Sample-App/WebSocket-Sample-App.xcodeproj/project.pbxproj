@@ -19,6 +19,8 @@
 		C26997D02AD8B693005656DD /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997CF2AD8B693005656DD /* HomeViewModel.swift */; };
 		C26997D22AD8B69E005656DD /* HomeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997D12AD8B69E005656DD /* HomeCoordinator.swift */; };
 		C26997D42AD8B83B005656DD /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997D32AD8B83B005656DD /* App.swift */; };
+		C26997D82AD9CD74005656DD /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997D72AD9CD74005656DD /* APIManager.swift */; };
+		C26997DA2AD9D0EE005656DD /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997D92AD9D0EE005656DD /* APIError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		C26997CF2AD8B693005656DD /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		C26997D12AD8B69E005656DD /* HomeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCoordinator.swift; sourceTree = "<group>"; };
 		C26997D32AD8B83B005656DD /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		C26997D72AD9CD74005656DD /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		C26997D92AD9D0EE005656DD /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +76,7 @@
 				C26997C72AD8B5EB005656DD /* AppTransition.swift */,
 				C26997AD2AD8B4CC005656DD /* AppDelegate.swift */,
 				C26997AF2AD8B4CC005656DD /* SceneDelegate.swift */,
+				C26997D62AD9CD61005656DD /* Networking */,
 				C26997C12AD8B53F005656DD /* Protocols */,
 				C26997C92AD8B654005656DD /* Views */,
 				C26997B62AD8B4CE005656DD /* Assets.xcassets */,
@@ -115,6 +120,15 @@
 				C26997CF2AD8B693005656DD /* HomeViewModel.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		C26997D62AD9CD61005656DD /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				C26997D72AD9CD74005656DD /* APIManager.swift */,
+				C26997D92AD9D0EE005656DD /* APIError.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,6 +205,8 @@
 				C26997AE2AD8B4CC005656DD /* AppDelegate.swift in Sources */,
 				C26997D22AD8B69E005656DD /* HomeCoordinator.swift in Sources */,
 				C26997D42AD8B83B005656DD /* App.swift in Sources */,
+				C26997D82AD9CD74005656DD /* APIManager.swift in Sources */,
+				C26997DA2AD9D0EE005656DD /* APIError.swift in Sources */,
 				C26997CC2AD8B677005656DD /* HomeModel.swift in Sources */,
 				C26997D02AD8B693005656DD /* HomeViewModel.swift in Sources */,
 				C26997C82AD8B5EB005656DD /* AppTransition.swift in Sources */,

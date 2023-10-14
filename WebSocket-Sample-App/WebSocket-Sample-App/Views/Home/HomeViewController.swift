@@ -79,19 +79,19 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
         
         subscriber = viewModel.counterValueSubject
             .receive(on: DispatchQueue.main)
-            .scan((previous: 0.0, current: 0.0), { accumulator, newValue in
+            .scan((previous: "0.0", current: "0.0"), { accumulator, newValue in
                 (previous: accumulator.current, current: newValue)
             })
             .sink(receiveCompletion: { completion in
                 switch completion {
                     case .finished: print("Value Received!")
-                    case .failure(let failure): fatalError(failure.localizedDescription)
+                    case .failure(let failure): print(failure.localizedDescription)
                 }
             }, receiveValue: { currentValue, newValue in
                 UIView.animate(withDuration: 0.5) { [unowned self] in
                     imageView.layer.borderColor = newValue > currentValue ? UIColor.green.cgColor : UIColor.red.cgColor
                     imageView.layer.borderColor = UIColor.clear.cgColor
-                    countLabel.text = "\(newValue)"
+                    countLabel.text = newValue
                 }
             })
     }
