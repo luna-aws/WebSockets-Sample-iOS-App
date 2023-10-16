@@ -21,7 +21,7 @@ final class APIManager {
     private var webSocketTask: URLSessionWebSocketTask
     
     init() {
-        self.url = URL(string: "wss://ws.coincap.io/prices?assets=bitcoin")!
+        self.url = URL(string: "wss://ws.coincap.io/prices?assets=ALL")!
         self.webSocketTask = URLSession.shared.webSocketTask(with: url)
     }
     

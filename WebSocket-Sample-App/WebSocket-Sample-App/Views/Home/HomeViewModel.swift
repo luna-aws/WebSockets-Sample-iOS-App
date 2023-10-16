@@ -10,7 +10,11 @@ import Foundation
 
 protocol HomeViewModelRepresentable {
     
-    var counterValueSubject: CurrentValueSubject<String, Error> { get }
+    var anyCancellables: Set<AnyCancellable> { get set }
+    var bitcoinValueSubject: CurrentValueSubject<String, Error> { get }
+    var ethereumValueSubject: CurrentValueSubject<String, Error> { get }
+    var moneroValueSubject: CurrentValueSubject<String, Error> { get }
+    var litecoinValueSubject: CurrentValueSubject<String, Error> { get }
     
     func loadData()
 }
@@ -19,12 +23,34 @@ final class HomeViewModel<R: AppRouter> {
     
     private let router: R
     private let store: WebSocketStore
-    private var anyCancellables: Set<AnyCancellable> = .init()
     
-    private var counterEmited: String = "0.0" {
+    var anyCancellables: Set<AnyCancellable> = .init()
+    var bitcoinValueSubject: CurrentValueSubject<String, Error> = .init("")
+    var ethereumValueSubject: CurrentValueSubject<String, Error> = .init("")
+    var moneroValueSubject: CurrentValueSubject<String, Error> = .init("")
+    var litecoinValueSubject: CurrentValueSubject<String, Error> = .init("")
+    
+    private var bitcoinEmited: String = "0.0" {
         didSet {
-            counterValueSubject.send(counterEmited)
-            loadData()
+            bitcoinValueSubject.send(bitcoinEmited)
+        }
+    }
+    
+    private var etheeumEmited: String = "0.0" {
+        didSet {
+            ethereumValueSubject.send(etheeumEmited)
+        }
+    }
+    
+    private var moneroEmited: String = "0.0" {
+        didSet {
+            moneroValueSubject.send(moneroEmited)
+        }
+    }
+    
+    private var litecoinEmited: String = "0.0" {
+        didSet {
+            litecoinValueSubject.send(litecoinEmited)
         }
     }
     
@@ -44,7 +70,40 @@ extension HomeViewModel: HomeViewModelRepresentable {
             switch try await store.listenService() {
                 case .data(let data): counterValueSubject.send(data.description)
                     
-                case .string(let string): counterEmited = string
+                case .string(let string): 
+                    
+                    guard
+                        let data = string.data(using: .utf8)
+                    else {
+                        counterValueSubject.send(completion: .failure(APIError.decodeError))
+                        return
+                    }
+                    
+                    do {
+                        
+                        let decodedData = try JSONDecoder().decode([String: String].self, from: data)
+                        
+                        if let bitcoinValue = decodedData[Coin.bitcoin.rawValue] {
+                            bitcoinEmited = "\(Coin.bitcoin.rawValue): \(bitcoinValue)".capitalized
+                        }
+                        
+                        if let etherumCoin = decodedData[Coin.ethereum.rawValue] {
+                            etheeumEmited = "\(Coin.ethereum.rawValue): \(etherumCoin)".capitalized
+                        }
+                        
+                        if let moneroCoin = decodedData[Coin.monero.rawValue] {
+                            moneroEmited = "\(Coin.monero.rawValue): \(moneroCoin)".capitalized
+                        }
+                        
+                        if let litecoin = decodedData[Coin.litecoin.rawValue] {
+                            litecoinEmited = "\(Coin.litecoin.rawValue): \(litecoin)".capitalized
+                        }
+                        
+                    } catch {
+                        fatalError(error.localizedDescription)
+                    }
+                    
+                    loadData()
                     
                 @unknown default: counterValueSubject.send(completion: .failure(APIError.unknownError))
             }
