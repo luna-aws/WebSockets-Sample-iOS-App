@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C200526E2AE07CA100CDC87C /* ReusableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C200526D2AE07CA100CDC87C /* ReusableImageView.swift */; };
+		C20052702AE07D3300CDC87C /* ReusableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C200526F2AE07D3300CDC87C /* ReusableLabel.swift */; };
 		C26997AE2AD8B4CC005656DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997AD2AD8B4CC005656DD /* AppDelegate.swift */; };
 		C26997B02AD8B4CC005656DD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26997AF2AD8B4CC005656DD /* SceneDelegate.swift */; };
 		C26997B72AD8B4CE005656DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C26997B62AD8B4CE005656DD /* Assets.xcassets */; };
@@ -24,6 +26,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C200526D2AE07CA100CDC87C /* ReusableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableImageView.swift; sourceTree = "<group>"; };
+		C200526F2AE07D3300CDC87C /* ReusableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableLabel.swift; sourceTree = "<group>"; };
 		C26997AA2AD8B4CC005656DD /* WebSocket-Sample-App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WebSocket-Sample-App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C26997AD2AD8B4CC005656DD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C26997AF2AD8B4CC005656DD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -53,6 +57,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C200526C2AE07C2A00CDC87C /* ReusableViews */ = {
+			isa = PBXGroup;
+			children = (
+				C200526D2AE07CA100CDC87C /* ReusableImageView.swift */,
+				C200526F2AE07D3300CDC87C /* ReusableLabel.swift */,
+			);
+			path = ReusableViews;
+			sourceTree = "<group>";
+		};
 		C26997A12AD8B4CC005656DD = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				C26997CA2AD8B65E005656DD /* Home */,
+				C200526C2AE07C2A00CDC87C /* ReusableViews */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -202,7 +216,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				C26997C62AD8B59B005656DD /* Router.swift in Sources */,
+				C20052702AE07D3300CDC87C /* ReusableLabel.swift in Sources */,
 				C26997AE2AD8B4CC005656DD /* AppDelegate.swift in Sources */,
+				C200526E2AE07CA100CDC87C /* ReusableImageView.swift in Sources */,
 				C26997D22AD8B69E005656DD /* HomeCoordinator.swift in Sources */,
 				C26997D42AD8B83B005656DD /* App.swift in Sources */,
 				C26997D82AD9CD74005656DD /* APIManager.swift in Sources */,

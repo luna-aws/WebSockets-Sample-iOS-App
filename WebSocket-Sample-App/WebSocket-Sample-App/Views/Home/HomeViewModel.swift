@@ -24,12 +24,6 @@ final class HomeViewModel<R: AppRouter> {
     private let router: R
     private let store: WebSocketStore
     
-    var anyCancellables: Set<AnyCancellable> = .init()
-    var bitcoinValueSubject: CurrentValueSubject<String, Error> = .init("")
-    var ethereumValueSubject: CurrentValueSubject<String, Error> = .init("")
-    var moneroValueSubject: CurrentValueSubject<String, Error> = .init("")
-    var litecoinValueSubject: CurrentValueSubject<String, Error> = .init("")
-    
     private var bitcoinEmited: String = "0.0" {
         didSet {
             bitcoinValueSubject.send(bitcoinEmited)
@@ -54,7 +48,11 @@ final class HomeViewModel<R: AppRouter> {
         }
     }
     
-    internal var counterValueSubject: CurrentValueSubject<String, Error> = .init("0")
+    internal var anyCancellables: Set<AnyCancellable> = .init()
+    internal var bitcoinValueSubject: CurrentValueSubject<String, Error> = .init("0")
+    internal var ethereumValueSubject: CurrentValueSubject<String, Error> = .init("0")
+    internal var moneroValueSubject: CurrentValueSubject<String, Error> = .init("0")
+    internal var litecoinValueSubject: CurrentValueSubject<String, Error> = .init("0")
     
     init(router: R, store: WebSocketStore = APIManager()) {
         self.router = router
@@ -67,17 +65,12 @@ extension HomeViewModel: HomeViewModelRepresentable {
     
     func loadData() {
         Task {
-            switch try await store.listenService() {
-                case .data(let data): counterValueSubject.send(data.description)
+            switch try await self.store.listenService() {
+                case .data(_): break
                     
                 case .string(let string): 
                     
-                    guard
-                        let data = string.data(using: .utf8)
-                    else {
-                        counterValueSubject.send(completion: .failure(APIError.decodeError))
-                        return
-                    }
+                    guard let data = string.data(using: .utf8) else { fatalError() }
                     
                     do {
                         
@@ -105,7 +98,7 @@ extension HomeViewModel: HomeViewModelRepresentable {
                     
                     loadData()
                     
-                @unknown default: counterValueSubject.send(completion: .failure(APIError.unknownError))
+                @unknown default: fatalError()
             }
         }
         .cancel()
