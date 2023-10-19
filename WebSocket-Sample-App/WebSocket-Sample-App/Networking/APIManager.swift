@@ -9,8 +9,8 @@ import Combine
 import Foundation
 
 protocol WebSocketStore {
-    
-    func startService() 
+    func resumeService() 
+    func pauseService()
     func listenService() async throws -> URLSessionWebSocketTask.Message
     func closeService()
 }
@@ -32,8 +32,12 @@ final class APIManager {
 
 extension APIManager: WebSocketStore {
     
-    func startService() {
+    func resumeService() {
         webSocketTask.resume()
+    }
+    
+    func pauseService() {
+        webSocketTask.progress.pause()
     }
     
     func listenService() async throws -> URLSessionWebSocketTask.Message {

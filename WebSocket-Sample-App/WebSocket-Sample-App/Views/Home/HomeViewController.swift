@@ -32,6 +32,20 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
         return stackView
     }()
     
+    private lazy var switchServiceStateButton: UISwitch = {
+        let switchButton = UISwitch()
+        switchButton.translatesAutoresizingMaskIntoConstraints = false
+        switchButton.setOn(false, animated: true)
+        switchButton.addTarget(self, action: #selector(changeServiceState), for: .touchUpInside)
+        return switchButton
+    }()
+    
+    private lazy var serviceStateLabel: ReusableLabel = {
+        let label = ReusableLabel()
+        label.text = "Service State"
+        return label
+    }()
+    
     init(viewModel: ViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -53,6 +67,8 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
         view.backgroundColor = .white
         
         view.addSubview(containerView)
+        view.addSubview(switchServiceStateButton)
+        view.addSubview(serviceStateLabel)
         
         containerView.addSubview(bitcoinImageView)
         bitcoinImageView.addSubview(bitcoinCounterLabel)
@@ -69,8 +85,14 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
         NSLayoutConstraint.activate([
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            containerView.widthAnchor.constraint(equalToConstant: view.bounds.width * 0.8),
-            containerView.heightAnchor.constraint(equalToConstant: view.bounds.height * 0.7),
+            containerView.widthAnchor.constraint(equalToConstant: view.bounds.width * 0.7),
+            containerView.heightAnchor.constraint(equalToConstant: view.bounds.height * 0.6),
+            
+            switchServiceStateButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            switchServiceStateButton.bottomAnchor.constraint(equalTo: containerView.topAnchor, constant: 5),
+            
+            serviceStateLabel.leadingAnchor.constraint(equalTo: switchServiceStateButton.trailingAnchor, constant: 10),
+            serviceStateLabel.centerYAnchor.constraint(equalTo: switchServiceStateButton.centerYAnchor),
             
             /// Bitcoin
             
@@ -117,6 +139,13 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
     
     private func bindUI() {
         
+        let completion = { (completion: Subscribers.Completion<APIError>) -> Void in
+            switch completion {
+                case .finished: print("Value Received!")
+                case .failure(let failure): print(failure.localizedDescription)
+            }
+        }
+        
         viewModel.loadData()
         
         viewModel.bitcoinValueSubject
@@ -124,12 +153,7 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
             .scan((previous: "0.0", current: "0.0"), { accumulator, newValue in
                 (previous: accumulator.current, current: newValue)
             })
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                    case .finished: print("Value Received!")
-                    case .failure(let failure): print(failure.localizedDescription)
-                }
-            }, receiveValue: { [unowned self] currentValue, newValue in
+            .sink(receiveCompletion: completion, receiveValue: { [unowned self] currentValue, newValue in
                 bitcoinImageView.changeValueAnimation(isMinor: newValue < currentValue)
                 bitcoinCounterLabel.text = newValue
             })
@@ -140,12 +164,7 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
             .scan((previous: "0.0", current: "0.0"), { accumulator, newValue in
                 (previous: accumulator.current, current: newValue)
             })
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                    case .finished: print("Value Received!")
-                    case .failure(let failure): print(failure.localizedDescription)
-                }
-            }, receiveValue: { [unowned self] currentValue, newValue in
+            .sink(receiveCompletion: completion, receiveValue: { [unowned self] currentValue, newValue in
                 ethereumImageView.changeValueAnimation(isMinor: newValue < currentValue)
                 ethereumCounterLabel.text = newValue
             })
@@ -156,12 +175,7 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
             .scan((previous: "0.0", current: "0.0"), { accumulator, newValue in
                 (previous: accumulator.current, current: newValue)
             })
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                    case .finished: print("Value Received!")
-                    case .failure(let failure): print(failure.localizedDescription)
-                }
-            }, receiveValue: { [unowned self] currentValue, newValue in
+            .sink(receiveCompletion: completion, receiveValue: { [unowned self] currentValue, newValue in
                 moneroImageView.changeValueAnimation(isMinor: newValue < currentValue)
                 moneroCounterLabel.text = newValue
             })
@@ -172,15 +186,22 @@ final class HomeView<ViewModel: HomeViewModelRepresentable>: UIViewController {
             .scan((previous: "0.0", current: "0.0"), { accumulator, newValue in
                 (previous: accumulator.current, current: newValue)
             })
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                    case .finished: print("Value Received!")
-                    case .failure(let failure): print(failure.localizedDescription)
-                }
-            }, receiveValue: { [unowned self] currentValue, newValue in
+            .sink(receiveCompletion: completion, receiveValue: { [unowned self] currentValue, newValue in
                 litecoinImageView.changeValueAnimation(isMinor: newValue < currentValue)
                 litecoinCounterLabel.text = newValue
             })
             .store(in: &anyCancellables)
+        
+        viewModel.serviceStateValueSubject
+            .sink(receiveCompletion: completion,
+                  receiveValue: { [unowned self] in switchServiceStateButton.setOn($0, animated: true) })
+            .store(in: &anyCancellables)
+
+
+    }
+    
+    @objc
+    private func changeServiceState() {
+        viewModel.changeServiceState()
     }
 }

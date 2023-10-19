@@ -11,6 +11,8 @@ enum AppTransition {
     
     var identifier: String { String(describing: self) }
     
+    var hasState: Bool { false }
+    
     func coordinatorFor<R: AppRouter>(router: R) -> Coordinator {
         switch self {
             case .showHome:

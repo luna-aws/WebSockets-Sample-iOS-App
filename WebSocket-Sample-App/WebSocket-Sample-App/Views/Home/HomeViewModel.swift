@@ -11,12 +11,15 @@ import Foundation
 protocol HomeViewModelRepresentable {
     
     var anyCancellables: Set<AnyCancellable> { get set }
-    var bitcoinValueSubject: CurrentValueSubject<String, Error> { get }
-    var ethereumValueSubject: CurrentValueSubject<String, Error> { get }
-    var moneroValueSubject: CurrentValueSubject<String, Error> { get }
-    var litecoinValueSubject: CurrentValueSubject<String, Error> { get }
+    var bitcoinValueSubject: CurrentValueSubject<String, APIError> { get }
+    var ethereumValueSubject: CurrentValueSubject<String, APIError> { get }
+    var moneroValueSubject: CurrentValueSubject<String, APIError> { get }
+    var litecoinValueSubject: CurrentValueSubject<String, APIError> { get }
+    var serviceStateValueSubject: CurrentValueSubject<Bool, APIError> { get }
     
     func loadData()
+    func saveCoinValues()
+    func changeServiceState()
 }
 
 final class HomeViewModel<R: AppRouter> { 
@@ -48,16 +51,27 @@ final class HomeViewModel<R: AppRouter> {
         }
     }
     
+    private var serviceState: Bool = false {
+        didSet {
+            serviceState ? store.resumeService() : store.pauseService()
+            serviceStateValueSubject.send(serviceState)
+        }
+    }
+    
     internal var anyCancellables: Set<AnyCancellable> = .init()
-    internal var bitcoinValueSubject: CurrentValueSubject<String, Error> = .init("0")
-    internal var ethereumValueSubject: CurrentValueSubject<String, Error> = .init("0")
-    internal var moneroValueSubject: CurrentValueSubject<String, Error> = .init("0")
-    internal var litecoinValueSubject: CurrentValueSubject<String, Error> = .init("0")
+    internal var bitcoinValueSubject: CurrentValueSubject<String, APIError> = .init("0")
+    internal var ethereumValueSubject: CurrentValueSubject<String, APIError> = .init("0")
+    internal var moneroValueSubject: CurrentValueSubject<String, APIError> = .init("0")
+    internal var litecoinValueSubject: CurrentValueSubject<String, APIError> = .init("0")
+    internal var serviceStateValueSubject: CurrentValueSubject<Bool, APIError> = .init(false)
     
     init(router: R, store: WebSocketStore = APIManager()) {
         self.router = router
         self.store = store
-        self.store.startService()
+    }
+    
+    deinit {
+        store.closeService()
     }
 }
 
@@ -66,8 +80,6 @@ extension HomeViewModel: HomeViewModelRepresentable {
     func loadData() {
         Task {
             switch try await self.store.listenService() {
-                case .data(_): break
-                    
                 case .string(let string): 
                     
                     guard let data = string.data(using: .utf8) else { fatalError() }
@@ -93,14 +105,37 @@ extension HomeViewModel: HomeViewModelRepresentable {
                         }
                         
                     } catch {
-                        fatalError(error.localizedDescription)
+                        [bitcoinValueSubject, ethereumValueSubject, moneroValueSubject, litecoinValueSubject].forEach { valueSubject in
+                            valueSubject.send(completion: .failure(.genericError(error)))
+                        }
                     }
                     
                     loadData()
                     
-                @unknown default: fatalError()
+                default: break
             }
         }
         .cancel()
+    }
+    
+    func saveCoinValues() {
+        
+        for (index, valueEmited) in [bitcoinEmited, etheeumEmited, moneroEmited, litecoinEmited].enumerated() {
+            UserDefaults.standard.setValue(valueEmited, forKey: Coin.allCases[index].rawValue)
+        }
+        
+        store.pauseService()
+        serviceState = false
+    }
+    
+    func loadCoinValues() {
+        bitcoinEmited = UserDefaults.standard.value(forKey: Coin.bitcoin.rawValue) as? String ?? "0"
+        etheeumEmited = UserDefaults.standard.value(forKey: Coin.ethereum.rawValue)  as? String  ?? "0"
+        moneroEmited = UserDefaults.standard.value(forKey: Coin.monero.rawValue)  as? String  ?? "0"
+        litecoinEmited = UserDefaults.standard.value(forKey: Coin.litecoin.rawValue)  as? String  ?? "0"
+    }
+    
+    func changeServiceState() {
+        serviceState.toggle()
     }
 }

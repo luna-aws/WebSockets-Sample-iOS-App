@@ -13,5 +13,11 @@ enum APIError: Error {
     case unknownError
     case genericError(Error)
     
-    var description: String  { String(describing: self) }
+    var description: String  {
+        switch self {
+            case .genericError(let error): return error.localizedDescription
+                
+            default: return String(describing: self)
+        }
+    }
 }

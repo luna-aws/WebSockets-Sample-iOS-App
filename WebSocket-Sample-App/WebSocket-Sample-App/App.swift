@@ -9,14 +9,16 @@ import UIKit
 
 final class App {
     
+    var coordinatorRegister: [AppTransition: Coordinator] = [:]
     var navController: UINavigationController = .init()
 }
 
 extension App: AppRouter {
     
     func process(route: AppTransition) {
-        let coordinator = route.coordinatorFor(router: self)
-        coordinator.start()
+        let coordinator = route.hasState ? coordinatorRegister[route] : route.coordinatorFor(router: self)
+        coordinatorRegister[route] = coordinator
+        coordinator?.start()
         print(route.identifier)
     }
     
@@ -29,5 +31,20 @@ extension App: Coordinator {
     
     func start() {
         process(route: .showHome)
+    }
+}
+
+extension App {
+    
+    func saveData() {
+        guard let coordinator = coordinatorRegister[.showHome] as? HomeCoordinator<Self> else { return }
+        
+        coordinator.saveCoinValues()
+    }
+    
+    func loadData() {
+        guard let coordinator = coordinatorRegister[.showHome] as? HomeCoordinator<Self> else { return }
+        
+        coordinator.loadCoinValues()
     }
 }

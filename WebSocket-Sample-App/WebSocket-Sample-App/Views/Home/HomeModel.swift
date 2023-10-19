@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Coin: String {
+enum Coin: String, CaseIterable {
     case bitcoin
     case ethereum
     case monero

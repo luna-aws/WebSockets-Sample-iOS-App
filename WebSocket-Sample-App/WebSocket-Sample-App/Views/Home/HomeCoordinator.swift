@@ -15,16 +15,21 @@ final class HomeCoordinator<R: AppRouter> {
         self.router = router
     }
     
-    private lazy var primaryViewController: UIViewController = {
-        let viewModel = HomeViewModel(router: router)
-        let viewController = HomeView(viewModel: viewModel)
-        return viewController
-    }()
+    private lazy var primaryViewModel = HomeViewModel(router: router)
+    private lazy var primaryViewController = HomeView(viewModel: primaryViewModel)
 }
 
 extension HomeCoordinator: Coordinator {
     
     func start() {
         router.navController.pushViewController(primaryViewController, animated: true)
+    }
+    
+    func saveCoinValues() {
+        primaryViewModel.saveCoinValues()
+    }
+    
+    func loadCoinValues() {
+        primaryViewModel.loadCoinValues()
     }
 }
